@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel — Divy Engineering</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;900&family=Barlow+Condensed:wght@700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --orange:#E8650A;--orange2:#FF7A1A;--orange-light:#FFF0E6;
+  --dark:#1A0A00;--text:#2D1A00;--text2:#6B4C2A;--border:#E8D5C0;
+  --white:#FFFFFF;--bg:#F7F3EE;--bg2:#F0EBE4;
+  --red:#DC2626;--green:#16A34A;--blue:#2563EB;
+}
+body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font-size:15px;}
+
+/* LOGIN */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#FFF5EE,#FFE0C0);}
+.login-box{background:var(--white);border:1px solid var(--border);padding:3rem;width:100%;max-width:420px;border-radius:8px;box-shadow:0 8px 40px rgba(232,101,10,0.12);}
+.login-logo{text-align:center;margin-bottom:2rem;}
+.login-logo .logo-icon{width:56px;height:56px;background:var(--orange);clip-path:polygon(20% 0%,80% 0%,100% 20%,100% 80%,80% 100%,20% 100%,0% 80%,0% 20%);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:24px;color:#fff;font-family:'Barlow Condensed',sans-serif;margin:0 auto 1rem;}
+.login-logo h2{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--dark);}
+.login-logo p{font-size:13px;color:var(--text2);margin-top:4px;}
+.login-form h3{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;color:var(--dark);margin-bottom:1.5rem;text-align:center;text-transform:uppercase;}
+.form-group{margin-bottom:1.25rem;}
+.form-group label{display:block;font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;}
+.form-group input{width:100%;background:var(--bg);border:1.5px solid var(--border);color:var(--text);padding:11px 14px;font-family:inherit;font-size:14px;outline:none;transition:border-color 0.2s;border-radius:4px;}
+.form-group input:focus{border-color:var(--orange);background:#fff;}
+.btn-login{width:100%;background:var(--orange);color:#fff;padding:13px;font-weight:700;font-size:15px;text-transform:uppercase;border:none;cursor:pointer;border-radius:4px;transition:background 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-login:hover{background:var(--orange2);}
+.login-error{background:#FEE2E2;border:1px solid #FECACA;color:var(--red);padding:10px 14px;border-radius:4px;font-size:13px;margin-bottom:1rem;display:none;}
+
+/* ADMIN LAYOUT */
+.admin-wrap{display:none;min-height:100vh;}
+.admin-sidebar{width:240px;background:var(--dark);position:fixed;top:0;left:0;height:100vh;overflow-y:auto;z-index:10;}
+.sidebar-logo{padding:1.5rem 1.25rem;border-bottom:1px solid rgba(255,255,255,0.08);}
+.sidebar-logo .logo-icon{width:36px;height:36px;background:var(--orange);clip-path:polygon(20% 0%,80% 0%,100% 20%,100% 80%,80% 100%,20% 100%,0% 80%,0% 20%);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;color:#fff;font-family:'Barlow Condensed',sans-serif;vertical-align:middle;margin-right:8px;}
+.sidebar-logo span{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:16px;color:#fff;line-height:1.2;display:inline-block;vertical-align:middle;}
+.sidebar-logo small{display:block;font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;margin-top:4px;margin-left:44px;}
+.sidebar-nav{padding:1rem 0;}
+.sidebar-section{padding:0.5rem 1.25rem;font-size:10px;font-weight:700;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:2px;margin-top:0.75rem;}
+.sidebar-link{display:flex;align-items:center;gap:10px;padding:11px 1.25rem;color:rgba(255,255,255,0.6);font-size:14px;font-weight:500;cursor:pointer;transition:all 0.2s;text-decoration:none;}
+.sidebar-link:hover{background:rgba(255,255,255,0.06);color:#fff;}
+.sidebar-link.active{background:var(--orange);color:#fff;}
+.sidebar-link i{font-size:18px;}
+.sidebar-bottom{position:absolute;bottom:0;left:0;right:0;padding:1rem 1.25rem;border-top:1px solid rgba(255,255,255,0.08);}
+.btn-logout{width:100%;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6);padding:10px;font-weight:600;font-size:13px;text-transform:uppercase;border:1px solid rgba(255,255,255,0.1);cursor:pointer;border-radius:4px;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.2s;}
+.btn-logout:hover{background:var(--red);color:#fff;border-color:var(--red);}
+
+.admin-main{margin-left:240px;min-height:100vh;}
+.admin-topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:5;}
+.topbar-title{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;color:var(--dark);text-transform:uppercase;}
+.topbar-user{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text2);}
+.user-avatar{width:36px;height:36px;background:var(--orange);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:15px;}
+.admin-content{padding:2rem;}
+
+/* PANELS */
+.panel{display:none;}
+.panel.active{display:block;}
+
+/* CARDS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;margin-bottom:2rem;}
+.stat-card{background:var(--white);border:1px solid var(--border);padding:1.5rem;border-radius:6px;border-left:4px solid var(--orange);}
+.stat-card .num{font-family:'Barlow Condensed',sans-serif;font-size:40px;font-weight:900;color:var(--orange);line-height:1;}
+.stat-card .lbl{font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-top:4px;font-weight:600;}
+
+/* CARD */
+.card{background:var(--white);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:1.5rem;}
+.card-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.card-header h3{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;text-transform:uppercase;color:var(--dark);}
+.card-body{padding:1.5rem;}
+
+/* FORM */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.fg{margin-bottom:1.25rem;}
+.fg label{display:block;font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;}
+.fg input,.fg select,.fg textarea{width:100%;background:var(--bg);border:1.5px solid var(--border);color:var(--text);padding:10px 14px;font-family:inherit;font-size:14px;outline:none;transition:border-color 0.2s;border-radius:4px;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--orange);background:#fff;}
+.fg textarea{min-height:80px;resize:vertical;}
+.fg.full{grid-column:1/-1;}
+
+/* UPLOAD AREA */
+.upload-area{border:2px dashed var(--border);background:var(--bg);padding:2.5rem;text-align:center;cursor:pointer;transition:all 0.2s;border-radius:6px;position:relative;}
+.upload-area:hover,.upload-area.drag{border-color:var(--orange);background:var(--orange-light);}
+.upload-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.upload-area i{font-size:40px;color:var(--orange);margin-bottom:1rem;display:block;}
+.upload-area p{color:var(--text2);font-size:14px;}
+.upload-area span{color:var(--orange);font-weight:600;}
+.preview-wrap{display:flex;flex-wrap:wrap;gap:1rem;margin-top:1rem;}
+.preview-item{position:relative;width:100px;height:100px;border-radius:4px;overflow:hidden;border:2px solid var(--border);}
+.preview-item img{width:100%;height:100%;object-fit:cover;}
+.preview-item .remove-img{position:absolute;top:4px;right:4px;background:var(--red);color:#fff;border:none;width:20px;height:20px;border-radius:50%;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;}
+
+/* PROGRESS */
+.progress-wrap{margin-top:1rem;display:none;}
+.progress-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--orange);width:0%;transition:width 0.3s;border-radius:3px;}
+.progress-label{font-size:12px;color:var(--text2);margin-top:6px;}
+
+/* BUTTONS */
+.btn{padding:10px 22px;font-weight:700;font-size:14px;text-transform:uppercase;border:none;cursor:pointer;border-radius:4px;display:inline-flex;align-items:center;gap:6px;transition:all 0.2s;letter-spacing:0.5px;}
+.btn-orange{background:var(--orange);color:#fff;} .btn-orange:hover{background:var(--orange2);}
+.btn-red{background:var(--red);color:#fff;}
+.btn-green{background:var(--green);color:#fff;}
+.btn-outline{background:transparent;color:var(--orange);border:1.5px solid var(--orange);} .btn-outline:hover{background:var(--orange);color:#fff;}
+.btn-sm{padding:6px 14px;font-size:12px;}
+
+/* PRODUCTS TABLE */
+.prod-table{width:100%;border-collapse:collapse;}
+.prod-table th{background:var(--orange);color:#fff;padding:10px 14px;text-align:left;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;}
+.prod-table td{padding:10px 14px;border-bottom:1px solid var(--border);font-size:14px;color:var(--text);}
+.prod-table tr:hover td{background:var(--orange-light);}
+.prod-table td img{width:48px;height:48px;object-fit:cover;border-radius:4px;border:1px solid var(--border);}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;}
+.badge-orange{background:var(--orange-light);color:var(--orange);}
+.badge-green{background:#DCFCE7;color:var(--green);}
+
+/* ALERTS */
+.alert{padding:12px 16px;border-radius:4px;font-size:14px;margin-bottom:1rem;display:flex;align-items:center;gap:8px;font-weight:500;}
+.alert-success{background:#DCFCE7;border:1px solid #BBF7D0;color:var(--green);}
+.alert-error{background:#FEE2E2;border:1px solid #FECACA;color:var(--red);}
+.alert-info{background:var(--orange-light);border:1px solid rgba(232,101,10,0.2);color:var(--orange);}
+.toast-admin{position:fixed;bottom:2rem;right:2rem;background:var(--orange);color:#fff;padding:14px 22px;font-weight:700;font-size:14px;z-index:999;transform:translateY(100px);transition:transform 0.3s;border-radius:4px;box-shadow:0 4px 20px rgba(232,101,10,0.3);display:flex;align-items:center;gap:8px;}
+.toast-admin.show{transform:translateY(0);}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:3rem;color:var(--text2);}
+.empty-state i{font-size:48px;color:var(--border);margin-bottom:1rem;display:block;}
+
+/* TABS */
+.tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:2rem;}
+.tab{padding:10px 20px;font-weight:600;font-size:14px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;transition:all 0.2s;}
+.tab:hover{color:var(--orange);}
+.tab.active{color:var(--orange);border-bottom-color:var(--orange);}
+
+/* HERO IMAGE SECTION */
+.hero-img-preview{width:100%;max-width:400px;aspect-ratio:16/9;background:var(--bg2);border:2px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:1rem;}
+.hero-img-preview img{width:100%;height:100%;object-fit:cover;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="login-wrap">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="logo-icon">D</div>
+      <h2>Divy Engineering</h2>
+      <p>Admin Panel — Secure Login</p>
+    </div>
+    <div class="login-error" id="login-error"><i class="ti ti-alert-circle"></i> <span id="login-error-msg">Invalid credentials</span></div>
+    <div class="login-form">
+      <h3>Sign In</h3>
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="login-email" placeholder="Enter username">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="login-password" placeholder="••••••••">
+      </div>
+      <button class="btn-login" onclick="doLogin()"><i class="ti ti-lock"></i> Sign In to Admin</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div class="admin-wrap" id="admin-wrap">
+  <!-- SIDEBAR -->
+  <div class="admin-sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-icon">D</span><span>Divy Engineering</span>
+      <small>Engineering — Admin</small>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">Main</div>
+      <div class="sidebar-link active" onclick="showPanel('dashboard')"><i class="ti ti-dashboard"></i> Dashboard</div>
+      <div class="sidebar-section">Content</div>
+      <div class="sidebar-link" onclick="showPanel('upload')"><i class="ti ti-cloud-upload"></i> Upload Products</div>
+      <div class="sidebar-link" onclick="showPanel('manage')"><i class="ti ti-packages"></i> Manage Products</div>
+      <div class="sidebar-link" onclick="showPanel('hero')"><i class="ti ti-photo"></i> Hero / Banner Images</div>
+      <div class="sidebar-section">Website</div>
+      <div class="sidebar-link" onclick="showPanel('settings')"><i class="ti ti-settings"></i> Site Settings</div>
+      <div class="sidebar-link" onclick="window.open('radhe_krishna_website.html','_blank')"><i class="ti ti-external-link"></i> View Website</div>
+    </nav>
+    <div class="sidebar-bottom">
+      <button class="btn-logout" onclick="doLogout()"><i class="ti ti-logout"></i> Sign Out</button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="admin-main">
+    <div class="admin-topbar">
+      <div class="topbar-title" id="topbar-title">Dashboard</div>
+      <div class="topbar-user">
+        <div class="user-avatar" id="user-initial">A</div>
+        <div>
+          <div style="font-weight:600;color:var(--dark);font-size:14px;" id="user-name">Admin</div>
+          <div style="font-size:12px;color:var(--text2);">Administrator</div>
+        </div>
+      </div>
+    </div>
+    <div class="admin-content">
+
+      <!-- DASHBOARD -->
+      <div class="panel active" id="panel-dashboard">
+        <div id="dash-alert" class="alert alert-info" style="display:none;"></div>
+        <div class="stats-row">
+          <div class="stat-card"><div class="num" id="stat-total">0</div><div class="lbl">Total Products</div></div>
+          <div class="stat-card"><div class="num" id="stat-cats">8</div><div class="lbl">Categories</div></div>
+          <div class="stat-card"><div class="num">100+</div><div class="lbl">Countries Served</div></div>
+          <div class="stat-card"><div class="num">25+</div><div class="lbl">Years Experience</div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>Recent Products</h3><button class="btn btn-orange btn-sm" onclick="showPanel('upload')"><i class="ti ti-plus"></i> Add Product</button></div>
+          <div class="card-body">
+            <div id="dash-recent-products"><div class="empty-state"><i class="ti ti-packages"></i><p>No products yet. Upload your first product!</p></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>Quick Actions</h3></div>
+          <div class="card-body" style="display:flex;gap:1rem;flex-wrap:wrap;">
+            <button class="btn btn-orange" onclick="showPanel('upload')"><i class="ti ti-cloud-upload"></i> Upload New Product</button>
+            <button class="btn btn-outline" onclick="showPanel('manage')"><i class="ti ti-packages"></i> Manage Products</button>
+            <button class="btn btn-outline" onclick="showPanel('hero')"><i class="ti ti-photo"></i> Update Hero Image</button>
+            <button class="btn btn-outline" onclick="window.open('radhe_krishna_website.html','_blank')"><i class="ti ti-external-link"></i> View Website</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- UPLOAD PRODUCTS -->
+      <div class="panel" id="panel-upload">
+        <div class="card">
+          <div class="card-header"><h3><i class="ti ti-cloud-upload" style="color:var(--orange);"></i> Upload New Product</h3></div>
+          <div class="card-body">
+            <div id="upload-alert"></div>
+            <div class="form-grid">
+              <div class="fg"><label>Product Name *</label><input type="text" id="prod-name" placeholder="e.g. SS 316L Seamless Tube"></div>
+              <div class="fg"><label>Category *</label>
+                <select id="prod-cat">
+                  <option value="">Select Category</option>
+                  <option>SS Tubes</option><option>SS Pipes</option><option>SS Fittings</option>
+                  <option>SS Flanges</option><option>SS Valves</option><option>Sheet & Plates</option>
+                  <option>Bars & Rods</option><option>Fasteners</option>
+                </select>
+              </div>
+              <div class="fg"><label>Grade / Material</label><input type="text" id="prod-grade" placeholder="e.g. 304, 316L, 2205"></div>
+              <div class="fg"><label>Size / Specification</label><input type="text" id="prod-size" placeholder="e.g. 1/2 inch to 24 inch NB"></div>
+              <div class="fg full"><label>Description</label><textarea id="prod-desc" placeholder="Brief product description..."></textarea></div>
+              <div class="fg full">
+                <label>Product Images (select multiple)</label>
+                <div class="upload-area" id="upload-area">
+                  <input type="file" id="img-input" accept="image/*" multiple onchange="handleFiles(this.files)">
+                  <i class="ti ti-photo-up"></i>
+                  <p>Drag & drop images here or <span>click to browse</span></p>
+                  <p style="font-size:12px;margin-top:6px;color:var(--text2);">Supports JPG, PNG, WEBP — max 10MB each</p>
+                </div>
+                <div class="preview-wrap" id="preview-wrap"></div>
+                <div class="progress-wrap" id="progress-wrap">
+                  <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+                  <div class="progress-label" id="progress-label">Uploading...</div>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;gap:1rem;margin-top:1rem;">
+              <button class="btn btn-orange" onclick="uploadProduct()"><i class="ti ti-cloud-upload"></i> Upload to Website</button>
+              <button class="btn btn-outline" onclick="clearForm()"><i class="ti ti-x"></i> Clear Form</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MANAGE PRODUCTS -->
+      <div class="panel" id="panel-manage">
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="ti ti-packages" style="color:var(--orange);"></i> All Products</h3>
+            <div style="display:flex;gap:0.75rem;align-items:center;">
+              <input type="text" id="search-prod" placeholder="Search products..." onkeyup="filterProducts()" style="padding:8px 14px;border:1.5px solid var(--border);border-radius:4px;font-family:inherit;font-size:13px;outline:none;width:200px;">
+              <button class="btn btn-orange btn-sm" onclick="showPanel('upload')"><i class="ti ti-plus"></i> Add New</button>
+            </div>
+          </div>
+          <div class="card-body" style="padding:0;">
+            <div id="manage-alert" style="padding:1rem 1.5rem;"></div>
+            <div style="overflow-x:auto;">
+              <table class="prod-table">
+                <thead><tr><th>Image</th><th>Name</th><th>Category</th><th>Grade</th><th>Size</th><th>Date</th><th>Actions</th></tr></thead>
+                <tbody id="products-tbody"><tr><td colspan="7"><div class="empty-state"><i class="ti ti-packages"></i><p>No products yet.</p></div></td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HERO IMAGES -->
+      <div class="panel" id="panel-hero">
+        <!-- INFO BOX -->
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="ti ti-slideshow" style="color:var(--orange);"></i> Hero Slideshow Images</h3>
+            <span style="font-size:13px;color:var(--text2);">These images appear on the right side of the Home page — fading every 3 seconds</span>
+          </div>
+          <div class="card-body">
+            <div id="hero-alert"></div>
+
+            <!-- HOW IT WORKS -->
+            <div style="background:var(--orange-light);border:1px solid rgba(232,101,10,0.2);padding:1rem 1.5rem;border-radius:6px;margin-bottom:1.5rem;display:flex;align-items:center;gap:12px;">
+              <i class="ti ti-info-circle" style="color:var(--orange);font-size:22px;flex-shrink:0;"></i>
+              <p style="font-size:13px;color:var(--text2);line-height:1.6;"><strong style="color:var(--dark);">How it works:</strong> Upload 2–6 images below. They will automatically appear in the hero slideshow on your website, fading every 3 seconds. You can also delete any image anytime.</p>
+            </div>
+
+            <!-- CURRENT SLIDESHOW PREVIEW -->
+            <div style="margin-bottom:2rem;">
+              <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin-bottom:1rem;">Current Slideshow Images</div>
+              <div id="current-slide-images" style="display:flex;flex-wrap:wrap;gap:1rem;">
+                <div style="color:var(--text2);font-size:13px;padding:1rem;"><i class="ti ti-loader" style="color:var(--orange);"></i> Loading...</div>
+              </div>
+            </div>
+
+            <!-- UPLOAD NEW IMAGES -->
+            <div style="border-top:1px solid var(--border);padding-top:1.5rem;">
+              <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin-bottom:1rem;">Upload New Slideshow Images (Max 6 total)</div>
+              <div class="upload-area" id="hero-upload-area">
+                <input type="file" id="hero-multi-input" accept="image/*" multiple onchange="handleHeroMultiFiles(this.files)">
+                <i class="ti ti-photo-up"></i>
+                <p>Drag & drop images here or <span>click to browse</span></p>
+                <p style="font-size:12px;margin-top:6px;color:var(--text2);">Select 1–6 images • JPG, PNG, WEBP • Max 10MB each</p>
+              </div>
+
+              <!-- PREVIEW SELECTED -->
+              <div id="hero-preview-wrap" class="preview-wrap" style="margin-top:1rem;"></div>
+
+              <!-- PROGRESS -->
+              <div class="progress-wrap" id="hero-progress-wrap" style="margin-top:1rem;">
+                <div class="progress-bar"><div class="progress-fill" id="hero-progress-fill"></div></div>
+                <div class="progress-label" id="hero-progress-label">Uploading...</div>
+              </div>
+
+              <div style="display:flex;gap:1rem;margin-top:1.25rem;align-items:center;">
+                <button class="btn btn-orange" onclick="uploadHeroSlideImages()"><i class="ti ti-cloud-upload"></i> Upload to Slideshow</button>
+                <button class="btn btn-outline" onclick="clearHeroSelection()"><i class="ti ti-x"></i> Clear Selection</button>
+                <span style="font-size:12px;color:var(--text2);" id="hero-file-count"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="panel" id="panel-settings">
+        <div class="card">
+          <div class="card-header"><h3><i class="ti ti-settings" style="color:var(--orange);"></i> Site Settings</h3></div>
+          <div class="card-body">
+            <div id="settings-alert"></div>
+            <div class="form-grid">
+              <div class="fg full"><label>Company Name</label><input type="text" id="set-name" value="Divy Engineering"></div>
+              <div class="fg"><label>Phone / WhatsApp</label><input type="text" id="set-phone" placeholder="+91 99999 99999"></div>
+              <div class="fg"><label>Email</label><input type="email" id="set-email" placeholder="divy.info@gmail.com"></div>
+              <div class="fg full"><label>Address</label><textarea id="set-address" placeholder="Full address..."></textarea></div>
+              <div class="fg"><label>GST Number</label><input type="text" id="set-gst" placeholder="22AAAAA0000A1Z5"></div>
+              <div class="fg"><label>Website Tagline</label><input type="text" id="set-tagline" placeholder="All Grades. One Trust."></div>
+            </div>
+            <button class="btn btn-orange" onclick="saveSettings()"><i class="ti ti-device-floppy"></i> Save Settings</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="toast-admin" id="toast"><span id="toast-msg"></span></div>
+
+<!-- FIREBASE + CLOUDINARY SCRIPT -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, setDoc, getDoc, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDV2io6wTTyd4oPXUyfRB8mbPO-ThuyDOw",
+  authDomain: "dhe-krishna-metal-industries.firebaseapp.com",
+  projectId: "dhe-krishna-metal-industries",
+  storageBucket: "dhe-krishna-metal-industries.firebasestorage.app",
+  messagingSenderId: "153445277536",
+  appId: "1:153445277536:web:909dcb9e6f03ed2bfd4805"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const CLOUDINARY_CLOUD = 'dmaqbbeph';
+const CLOUDINARY_PRESET = 'rkmi_uploads';
+
+// FILES STORE
+window.__selectedFiles = [];
+window.__heroFile = null;
+window.__bannerFile = null;
+window.__allProducts = [];
+
+// AUTH
+// onAuthStateChanged disabled - using custom login
+/*onAuthStateChanged(auth, user => {
+  if(user){
+    document.getElementById('login-wrap').style.display='none';
+    document.getElementById('admin-wrap').style.display='flex';
+    document.getElementById('user-name').textContent = user.email.split('@')[0];
+    document.getElementById('user-initial').textContent = user.email[0].toUpperCase();
+    loadProducts();
+    loadSettings();
+    loadHeroImages();
+  } else {
+    document.getElementById('login-wrap').style.display='flex';
+    document.getElementById('admin-wrap').style.display='none';
+  }
+});*/
+
+// Session-based login check
+if(sessionStorage.getItem('rkmi_admin')==='1'){
+  document.getElementById('login-wrap').style.display='none';
+  document.getElementById('admin-wrap').style.display='flex';
+  document.getElementById('user-name').textContent='DIVYA1';
+  document.getElementById('user-initial').textContent='D';
+  loadProducts();
+  loadSettings();
+  loadHeroImages();
+} else {
+  document.getElementById('login-wrap').style.display='flex';
+  document.getElementById('admin-wrap').style.display='none';
+}
+
+window.doLogin = async function(){
+  const username = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+  const errMsg = document.getElementById('login-error-msg');
+  errEl.style.display='none';
+  if(!username||!pass){ errMsg.textContent='Please enter username and password.'; errEl.style.display='flex'; return; }
+
+  // Custom credentials check
+  if(username === 'DIVYA1' && pass === 'DIVYA7263'){
+    // Valid — show admin
+    document.getElementById('login-wrap').style.display='none';
+    document.getElementById('admin-wrap').style.display='flex';
+    document.getElementById('user-name').textContent = 'DIVYA1';
+    document.getElementById('user-initial').textContent = 'D';
+    sessionStorage.setItem('rkmi_admin','1');
+    loadProducts();
+    loadSettings();
+    loadHeroImages();
+  } else {
+    errMsg.textContent = 'Invalid username or password.';
+    errEl.style.display='flex';
+    document.getElementById('login-password').value='';
+  }
+};
+
+window.doLogout = function(){
+  sessionStorage.removeItem('rkmi_admin');
+  document.getElementById('admin-wrap').style.display='none';
+  document.getElementById('login-wrap').style.display='flex';
+  document.getElementById('login-email').value='';
+  document.getElementById('login-password').value='';
+};
+
+// CLOUDINARY UPLOAD
+async function uploadToCloudinary(file, onProgress){
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('upload_preset', CLOUDINARY_PRESET);
+  fd.append('cloud_name', CLOUDINARY_CLOUD);
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`);
+    xhr.upload.onprogress = e => { if(e.lengthComputable && onProgress) onProgress(Math.round(e.loaded/e.total*100)); };
+    xhr.onload = () => {
+      const res = JSON.parse(xhr.responseText);
+      if(res.secure_url) resolve(res.secure_url);
+      else reject(new Error(res.error?.message || 'Upload failed'));
+    };
+    xhr.onerror = () => reject(new Error('Network error'));
+    xhr.send(fd);
+  });
+}
+
+// HANDLE FILES
+window.handleFiles = function(files){
+  window.__selectedFiles = Array.from(files);
+  const wrap = document.getElementById('preview-wrap');
+  wrap.innerHTML='';
+  window.__selectedFiles.forEach((f,i)=>{
+    const reader = new FileReader();
+    reader.onload = e => {
+      const div = document.createElement('div');
+      div.className='preview-item';
+      div.innerHTML=`<img src="${e.target.result}" alt="preview"><button class="remove-img" onclick="removeFile(${i})"><i class="ti ti-x"></i></button>`;
+      wrap.appendChild(div);
+    };
+    reader.readAsDataURL(f);
+  });
+};
+
+window.removeFile = function(i){ window.__selectedFiles.splice(i,1); window.handleFiles(window.__selectedFiles); };
+
+
+
+// UPLOAD PRODUCT
+window.uploadProduct = async function(){
+  const name = document.getElementById('prod-name').value.trim();
+  const cat  = document.getElementById('prod-cat').value;
+  const grade= document.getElementById('prod-grade').value.trim();
+  const size = document.getElementById('prod-size').value.trim();
+  const desc = document.getElementById('prod-desc').value.trim();
+  const alertEl = document.getElementById('upload-alert');
+
+  if(!name||!cat){ alertEl.innerHTML='<div class="alert alert-error"><i class="ti ti-alert-circle"></i> Product name and category are required.</div>'; return; }
+  if(window.__selectedFiles.length===0){ alertEl.innerHTML='<div class="alert alert-error"><i class="ti ti-alert-circle"></i> Please select at least one image.</div>'; return; }
+
+  alertEl.innerHTML='<div class="alert alert-info"><i class="ti ti-loader"></i> Uploading images to Cloudinary...</div>';
+  const progressWrap = document.getElementById('progress-wrap');
+  const progressFill = document.getElementById('progress-fill');
+  const progressLabel = document.getElementById('progress-label');
+  progressWrap.style.display='block';
+
+  try {
+    const imageUrls = [];
+    for(let i=0; i<window.__selectedFiles.length; i++){
+      progressLabel.textContent = `Uploading image ${i+1} of ${window.__selectedFiles.length}...`;
+      const url = await uploadToCloudinary(window.__selectedFiles[i], pct => {
+        const overall = ((i / window.__selectedFiles.length) + (pct/100/window.__selectedFiles.length)) * 100;
+        progressFill.style.width = overall+'%';
+      });
+      imageUrls.push(url);
+    }
+    progressFill.style.width='100%';
+    progressLabel.textContent='Saving to database...';
+
+    await addDoc(collection(db,'products'),{
+      name, category:cat, grade, size, description:desc,
+      imageUrl: imageUrls[0], images: imageUrls,
+      createdAt: serverTimestamp()
+    });
+
+    alertEl.innerHTML='<div class="alert alert-success"><i class="ti ti-check"></i> Product uploaded successfully! It is now live on your website.</div>';
+    progressWrap.style.display='none';
+    showToast('Product uploaded successfully!');
+    clearForm();
+    loadProducts();
+  } catch(e){
+    alertEl.innerHTML=`<div class="alert alert-error"><i class="ti ti-alert-circle"></i> Error: ${e.message}</div>`;
+    progressWrap.style.display='none';
+  }
+};
+
+// UPLOAD HERO/BANNER IMAGE
+// HERO SLIDESHOW FILES
+window.__heroMultiFiles = [];
+
+window.handleHeroMultiFiles = function(files){
+  window.__heroMultiFiles = Array.from(files);
+  const wrap = document.getElementById('hero-preview-wrap');
+  const countEl = document.getElementById('hero-file-count');
+  wrap.innerHTML = '';
+  countEl.textContent = window.__heroMultiFiles.length + ' image(s) selected';
+  window.__heroMultiFiles.forEach((f, i) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const div = document.createElement('div');
+      div.className = 'preview-item';
+      div.innerHTML = '<img src="' + e.target.result + '" alt="preview"><button class="remove-img" onclick="removeHeroFile(' + i + ')"><i class="ti ti-x"></i></button>';
+      wrap.appendChild(div);
+    };
+    reader.readAsDataURL(f);
+  });
+};
+
+window.removeHeroFile = function(i){
+  window.__heroMultiFiles.splice(i, 1);
+  window.handleHeroMultiFiles(window.__heroMultiFiles);
+};
+
+window.clearHeroSelection = function(){
+  window.__heroMultiFiles = [];
+  document.getElementById('hero-preview-wrap').innerHTML = '';
+  document.getElementById('hero-file-count').textContent = '';
+  document.getElementById('hero-multi-input').value = '';
+};
+
+window.uploadHeroSlideImages = async function(){
+  const alertEl = document.getElementById('hero-alert');
+  const files = window.__heroMultiFiles;
+  if(!files || files.length === 0){
+    alertEl.innerHTML = '<div class="alert alert-error"><i class="ti ti-alert-circle"></i> Please select at least 1 image.</div>';
+    return;
+  }
+  let existing = [];
+  try {
+    const snap = await getDoc(doc(db, 'siteImages', 'heroSlideshow'));
+    if(snap.exists()) existing = snap.data().images || [];
+  } catch(e){}
+  if(existing.length + files.length > 6){
+    alertEl.innerHTML = '<div class="alert alert-error"><i class="ti ti-alert-circle"></i> Max 6 images allowed. You have ' + existing.length + '. Remove some first.</div>';
+    return;
+  }
+  const progressWrap = document.getElementById('hero-progress-wrap');
+  const progressFill = document.getElementById('hero-progress-fill');
+  const progressLabel = document.getElementById('hero-progress-label');
+  progressWrap.style.display = 'block';
+  alertEl.innerHTML = '<div class="alert alert-info"><i class="ti ti-loader"></i> Uploading images to Cloudinary...</div>';
+  try {
+    const newUrls = [];
+    for(let i = 0; i < files.length; i++){
+      progressLabel.textContent = 'Uploading image ' + (i+1) + ' of ' + files.length + '...';
+      const url = await uploadToCloudinary(files[i], pct => {
+        const overall = ((i / files.length) + (pct/100/files.length)) * 100;
+        progressFill.style.width = overall + '%';
+      });
+      newUrls.push(url);
+    }
+    progressFill.style.width = '100%';
+    progressLabel.textContent = 'Saving...';
+    const allImages = [...existing, ...newUrls];
+    await setDoc(doc(db, 'siteImages', 'heroSlideshow'), { images: allImages, updatedAt: serverTimestamp() });
+    alertEl.innerHTML = '<div class="alert alert-success"><i class="ti ti-check"></i> ' + newUrls.length + ' image(s) uploaded! Now live on your website slideshow.</div>';
+    progressWrap.style.display = 'none';
+    clearHeroSelection();
+    showToast('Hero slideshow updated!');
+    loadHeroImages();
+  } catch(e){
+    alertEl.innerHTML = '<div class="alert alert-error"><i class="ti ti-alert-circle"></i> Upload failed: ' + e.message + '</div>';
+    progressWrap.style.display = 'none';
+  }
+};
+
+window.deleteHeroSlide = async function(index){
+  if(!confirm('Remove this image from slideshow?')) return;
+  try {
+    const snap = await getDoc(doc(db, 'siteImages', 'heroSlideshow'));
+    let images = snap.exists() ? (snap.data().images || []) : [];
+    images.splice(index, 1);
+    await setDoc(doc(db, 'siteImages', 'heroSlideshow'), { images, updatedAt: serverTimestamp() });
+    showToast('Image removed.');
+    loadHeroImages();
+  } catch(e){ showToast('Error: ' + e.message); }
+};
+
+async function loadHeroImages(){
+  const container = document.getElementById('current-slide-images');
+  if(!container) return;
+  try {
+    const snap = await getDoc(doc(db, 'siteImages', 'heroSlideshow'));
+    if(snap.exists() && snap.data().images && snap.data().images.length > 0){
+      const images = snap.data().images;
+      container.innerHTML = '';
+      images.forEach((url, i) => {
+        const div = document.createElement('div');
+        div.style.cssText = 'position:relative;width:140px;flex-shrink:0;';
+        div.innerHTML = '<div style="width:140px;height:100px;border-radius:6px;overflow:hidden;border:2px solid var(--border);background:var(--bg2);"><img src="' + url + '" style="width:100%;height:100%;object-fit:cover;" alt="Slide ' + (i+1) + '"></div><div style="position:absolute;top:6px;left:6px;background:var(--orange);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;">Slide ' + (i+1) + '</div><button onclick="deleteHeroSlide(' + i + ')" style="position:absolute;top:6px;right:6px;background:#DC2626;color:#fff;border:none;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;" title="Remove"><i class="ti ti-x"></i></button>';
+        container.appendChild(div);
+      });
+      if(images.length < 6){
+        const hint = document.createElement('div');
+        hint.style.cssText = 'width:140px;height:100px;border:2px dashed var(--border);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text2);font-size:12px;cursor:pointer;gap:4px;';
+        hint.innerHTML = '<i class="ti ti-plus" style="font-size:22px;color:var(--orange);"></i>Add More';
+        hint.onclick = () => document.getElementById('hero-multi-input').click();
+        container.appendChild(hint);
+      }
+    } else {
+      container.innerHTML = '<div style="color:var(--text2);font-size:13px;padding:1rem;background:var(--bg2);border-radius:6px;border:1px dashed var(--border);"><i class="ti ti-photo" style="margin-right:6px;"></i> No slideshow images yet. Upload below.</div>';
+    }
+  } catch(e){
+    container.innerHTML = '<div style="color:var(--text2);font-size:13px;">Could not load images.</div>';
+  }
+}
+
+// LOAD PRODUCTS
+async function loadProducts(){
+  try {
+    const q = query(collection(db,'products'), orderBy('createdAt','desc'));
+    const snap = await getDocs(q);
+    const items = [];
+    snap.forEach(d => items.push({id:d.id, ...d.data()}));
+    window.__allProducts = items;
+    document.getElementById('stat-total').textContent = items.length;
+    renderManageTable(items);
+    renderDashRecent(items.slice(0,5));
+  } catch(e){
+    console.log('Load products:', e);
+    // Try without orderBy if index not set
+    try {
+      const snap2 = await getDocs(collection(db,'products'));
+      const items = [];
+      snap2.forEach(d => items.push({id:d.id, ...d.data()}));
+      window.__allProducts = items;
+      document.getElementById('stat-total').textContent = items.length;
+      renderManageTable(items);
+      renderDashRecent(items.slice(0,5));
+    } catch(e2){ console.log('Load products fallback:', e2); }
+  }
+}
+
+function renderManageTable(items){
+  const tbody = document.getElementById('products-tbody');
+  if(!items||items.length===0){ tbody.innerHTML='<tr><td colspan="7"><div class="empty-state"><i class="ti ti-packages"></i><p>No products yet.</p></div></td></tr>'; return; }
+  tbody.innerHTML = items.map(p=>`
+    <tr>
+      <td>${p.imageUrl?`<img src="${p.imageUrl}" alt="${p.name}">`:'<i class="ti ti-photo" style="font-size:24px;color:var(--border);"></i>'}</td>
+      <td><strong>${p.name||'—'}</strong></td>
+      <td><span class="badge badge-orange">${p.category||'—'}</span></td>
+      <td>${p.grade||'—'}</td>
+      <td style="font-size:13px;color:var(--text2);">${p.size||'—'}</td>
+      <td style="font-size:12px;color:var(--text2);">${p.createdAt?.toDate ? p.createdAt.toDate().toLocaleDateString('en-IN') : '—'}</td>
+      <td><button class="btn btn-red btn-sm" onclick="deleteProduct('${p.id}')"><i class="ti ti-trash"></i> Delete</button></td>
+    </tr>`).join('');
+}
+
+function renderDashRecent(items){
+  const el = document.getElementById('dash-recent-products');
+  if(!items||items.length===0){ el.innerHTML='<div class="empty-state"><i class="ti ti-packages"></i><p>No products yet.</p></div>'; return; }
+  el.innerHTML=`<table class="prod-table"><thead><tr><th>Image</th><th>Name</th><th>Category</th><th>Grade</th></tr></thead><tbody>${items.map(p=>`<tr><td>${p.imageUrl?`<img src="${p.imageUrl}" alt="${p.name}">`:'—'}</td><td>${p.name||'—'}</td><td><span class="badge badge-orange">${p.category||'—'}</span></td><td>${p.grade||'—'}</td></tr>`).join('')}</tbody></table>`;
+}
+
+window.filterProducts = function(){
+  const q = document.getElementById('search-prod').value.toLowerCase();
+  const filtered = window.__allProducts.filter(p=>(p.name||'').toLowerCase().includes(q)||(p.category||'').toLowerCase().includes(q));
+  renderManageTable(filtered);
+};
+
+window.deleteProduct = async function(id){
+  if(!confirm('Are you sure you want to delete this product?')) return;
+  try {
+    await deleteDoc(doc(db,'products',id));
+    showToast('Product deleted.');
+    loadProducts();
+  } catch(e){ showManageAlert('Error: '+e.message,'error'); }
+};
+
+// LOAD HERO IMAGES
+
+
+// SETTINGS
+async function loadSettings(){
+  try {
+    const snap = await getDoc(doc(db,'settings','site'));
+    if(snap.exists()){
+      const d = snap.data();
+      if(d.phone) document.getElementById('set-phone').value=d.phone;
+      if(d.email) document.getElementById('set-email').value=d.email;
+      if(d.address) document.getElementById('set-address').value=d.address;
+      if(d.gst) document.getElementById('set-gst').value=d.gst;
+      if(d.tagline) document.getElementById('set-tagline').value=d.tagline;
+    }
+  } catch(e){ console.log('Settings:', e); }
+}
+
+window.saveSettings = async function(){
+  const alertEl = document.getElementById('settings-alert');
+  try {
+    await setDoc(doc(db,'settings','site'),{
+      name: document.getElementById('set-name').value,
+      phone: document.getElementById('set-phone').value,
+      email: document.getElementById('set-email').value,
+      address: document.getElementById('set-address').value,
+      gst: document.getElementById('set-gst').value,
+      tagline: document.getElementById('set-tagline').value,
+    });
+    alertEl.innerHTML='<div class="alert alert-success"><i class="ti ti-check"></i> Settings saved successfully!</div>';
+    showToast('Settings saved!');
+  } catch(e){ alertEl.innerHTML=`<div class="alert alert-error"><i class="ti ti-alert-circle"></i> ${e.message}</div>`; }
+};
+
+// TOAST
+window.showToast = function(msg){
+  const t=document.getElementById('toast');
+  document.getElementById('toast-msg').textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+};
+
+function showManageAlert(msg,type='success'){
+  const el=document.getElementById('manage-alert');
+  el.innerHTML=`<div class="alert alert-${type}"><i class="ti ti-${type==='success'?'check':'alert-circle'}"></i> ${msg}</div>`;
+}
+</script>
+
+<script>
+// NON-MODULE JS
+function showPanel(id){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-link').forEach(l=>l.classList.remove('active'));
+  const panel = document.getElementById('panel-'+id);
+  if(panel) panel.classList.add('active');
+  const titles = {dashboard:'Dashboard',upload:'Upload Products',manage:'Manage Products',hero:'Hero & Banner Images',settings:'Site Settings'};
+  document.getElementById('topbar-title').textContent = titles[id]||id;
+  document.querySelectorAll('.sidebar-link').forEach(l=>{
+    if(l.getAttribute('onclick')&&l.getAttribute('onclick').includes("'"+id+"'")) l.classList.add('active');
+  });
+}
+
+function clearForm(){
+  ['prod-name','prod-grade','prod-size','prod-desc'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('prod-cat').value='';
+  document.getElementById('preview-wrap').innerHTML='';
+  document.getElementById('upload-alert').innerHTML='';
+  document.getElementById('progress-wrap').style.display='none';
+  document.getElementById('progress-fill').style.width='0%';
+  window.__selectedFiles=[];
+}
+
+function switchHeroTab(tab){
+  document.getElementById('hero-tab-hero').style.display = tab==='hero'?'block':'none';
+  document.getElementById('hero-tab-banner').style.display = tab==='banner'?'block':'none';
+  document.querySelectorAll('.tab').forEach((t,i)=>{
+    t.classList.toggle('active',(tab==='hero'&&i===0)||(tab==='banner'&&i===1));
+  });
+}
+
+// Enter key on login
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('login-password').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); });
+});
+</script>
+</body>
+</html>
